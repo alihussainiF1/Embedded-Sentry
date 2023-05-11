@@ -139,11 +139,6 @@ int main()
   init_spi();
   Timer recordingTimer;
 
-  // // Clear the LCD display and set the text background color
-  // lcd.Clear(LCD_COLOR_WHITE);
-  // lcd.SetBackColor(LCD_COLOR_WHITE);
-  // lcd.SetTextColor(LCD_COLOR_BLACK);
-
   // Clear the LCD display and set the text background color
   lcd.Clear(LCD_COLOR_WHITE);
   lcd.SetBackColor(LCD_COLOR_WHITE);
@@ -185,6 +180,13 @@ int main()
       // Matching mode
       int16_t currentSequence[NUM_AXES][SEQUENCE_LENGTH];
 
+      // Store the first set of recorded values
+      char buffer_r[NUM_AXES][6];
+      for (int axis = 0; axis < NUM_AXES; axis++)
+      {
+        sprintf(buffer_r[axis], "%d", recordedSequence[axis][0]);
+      }
+
       for (int i = 0; i < SEQUENCE_LENGTH; i++)
       {
         int16_t data[NUM_AXES];
@@ -194,21 +196,29 @@ int main()
           currentSequence[axis][i] = data[axis];
         }
 
-        // Display the recorded X,Y,Z coordinates on the LCD screen
-        lcd.Clear(LCD_COLOR_WHITE);
-        lcd.DisplayStringAt(0, LINE(3), (uint8_t *)"Recorded X: ", LEFT_MODE);
-        lcd.DisplayStringAt(0, LINE(4), (uint8_t *)"Recorded Y: ", LEFT_MODE);
-        lcd.DisplayStringAt(0, LINE(5), (uint8_t *)"Recorded Z: ", LEFT_MODE);
+        // Display the current X,Y,Z coordinates on the LCD screen
+        lcd.DisplayStringAt(0, LINE(3), (uint8_t *)"X: ", CENTER_MODE);
+        lcd.DisplayStringAt(0, LINE(4), (uint8_t *)"Y: ", CENTER_MODE);
+        lcd.DisplayStringAt(0, LINE(5), (uint8_t *)"Z: ", CENTER_MODE);
 
         char buffer[6];
-        sprintf(buffer, "%d", recordedSequence[0][i]);
-        lcd.DisplayStringAt(100, LINE(3), (uint8_t *)buffer, LEFT_MODE);
+        sprintf(buffer, "%d", data[0]);
+        lcd.DisplayStringAt(50, LINE(3), (uint8_t *)buffer, CENTER_MODE);
 
-        sprintf(buffer, "%d", recordedSequence[1][i]);
-        lcd.DisplayStringAt(100, LINE(4), (uint8_t *)buffer, LEFT_MODE);
+        sprintf(buffer, "%d", data[1]);
+        lcd.DisplayStringAt(50, LINE(4), (uint8_t *)buffer, CENTER_MODE);
 
-        sprintf(buffer, "%d", recordedSequence[2][i]);
-        lcd.DisplayStringAt(100, LINE(5), (uint8_t *)buffer, LEFT_MODE);
+        sprintf(buffer, "%d", data[2]);
+        lcd.DisplayStringAt(50, LINE(5), (uint8_t *)buffer, CENTER_MODE);
+
+        // Display the recorded X,Y,Z coordinates on the LCD screen
+        lcd.DisplayStringAt(0, LINE(9), (uint8_t *)"X_r: ", CENTER_MODE);
+        lcd.DisplayStringAt(0, LINE(10), (uint8_t *)"Y_r: ", CENTER_MODE);
+        lcd.DisplayStringAt(0, LINE(11), (uint8_t *)"Z_r: ", CENTER_MODE);
+
+        lcd.DisplayStringAt(60, LINE(9), (uint8_t *)buffer_r[0], CENTER_MODE);
+        lcd.DisplayStringAt(60, LINE(10), (uint8_t *)buffer_r[1], CENTER_MODE);
+        lcd.DisplayStringAt(60, LINE(11), (uint8_t *)buffer_r[2], CENTER_MODE);
 
         ThisThread::sleep_for(50ms); // Sleep for a while to not overwhelm the sensor
       }
